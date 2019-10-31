@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#6492ff</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#6492ff</color>
+    <color name="colorWhite">#FFFFFF</color>
+    <color name="colorGreen">#00c900</color>
+    <color name="colorCardBg">#ffa8cb</color>
+    <color name="translucentBg">#55ffffff</color>
+    <color name="colorGray">#8c8c8c</color>
+    <color name="colorGrayDeep">#5c5c5c</color>
+    <color name="colorGrayContentBg">#F3F3F3</color>
+    <color name="colorDivider1">#E5E5E5</color>
+    <color name="colorCityPickerTitle">#FAFAFA</color>
+    <color name="colorThemeGray">#646464</color>
+    <color name="colorShadow">#AAEBEBEB</color>
+    <color name="colorCityPickerAlpha">#CC646464</color>
+    <color name="colorBlue">#6492ff</color>
+    <color name="colorGrayEditBg">#f4f6f8</color>
+    <color name="colorBgTran">#55000000</color>
+    <color name="colorRed">#d00000</color>
+    <color name="colorGrayLine">#dddddd</color>
+    <color name="colorBgTranCardBtn">#CCffffff</color>
+
+    <color name="colorGrayBgComm">#f5f5f5</color>
+    <color name="colorBlack">#000000</color>
+    <color name="colorTextBlack">#737373</color>
+    <color name="colorTextMainGray">#e6e6e6</color>
+    <color name="colorBlack2">#2c2c2c</color>
+    <color name="colorGray1">#f8f8f8</color>
+
+    <!--皮包样式颜色-->
+    <color name="colorWhite50">#88ffffff</color>
+    <color name="colorWhite20">#40ffffff</color>
+
+    <!--二维码识别板块-->
+    <color name="qr_code_white">#FFFFFFFF</color>
+    <color name="qr_code_flashlight_bg">#66000000</color>
+    <color name="qr_code_finder_mask">#80000000</color>
+    <color name="qr_code_flash_light_text_color">#66FFFFFF</color>
+    <color name="qr_code_finder_frame">#FFFFFFFF</color>
+    <color name="qr_code_finder_laser">#ef8394</color>
+
+    <!--没有设计图，暂定的颜色-->
+    <color name="colorTitleBlue">#344a5d</color>
+    <color name="colorCommBgGray">#f4f5f7</color>
+    <color name="colorHintCray">#c2c3c5</color>
+    <color name="colorTextGray">#9b9b9b</color>
+    <color name="colorYellow1">#f3c510</color>
+    <color name="colorYellow2">#febb2b</color>
+    <color name="colorTextYellow">#ff950f</color>
+    <color name="colorButtomBarGray">#ffffff</color>
+    <color name="colorTextBlue">#5baaff</color>
+    <color name="colorBgComm">#f9f9f9</color>
+
+    <!--今日头条顶部栏-->
+    <color name="activity_bg_color">#fffafafa</color>
+    <color name="top_category_bar_background">#ffeeeeee</color>
+    <color name="divider">#ffdddddd</color>
+
+    <color name="category_tab_text">#cacaca</color>
+    <color name="category_tab_text_dark">#17a9ff</color>
+    <color name="category_tab_highlight_text">#17a9ff</color>
+    <color name="category_tab_highlight_text_dark">#ffd43d3d</color>
+    <color name="category_tab_highlight_bg">#17a9ff</color>
+    <color name="category_tab_highlight_dark_bg">#fffafafa</color>
+
+    <color name="font_gray_b">#d4d4d3</color>
+
+    <color name="font_tab_1">#42369a</color>
+    <color name="font_tab_0">#b1b1b1</color>
+
+
+    <color name="font_common_1">#424242</color>
+    <color name="font_common_2">#a1a1a1</color>
+    <color name="font_blue">#42369a</color>
+
+    <color name="font_green">#00cccc</color>
+
+    <color name="commom_background">#f3f3f3</color>
+</resources>
