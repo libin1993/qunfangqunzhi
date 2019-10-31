@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--公共的左右边际-->
+    <dimen name="commPadLeftRight">15dp</dimen>
+    <dimen name="text_size_13sp">13dp</dimen>
+
+    <!--中等字体大小-->
+    <dimen name="fontMiddle">15sp</dimen>
+
+    <!--首页顶部菜单栏-->
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+
+    <dimen name="title_bar_height">44.0dip</dimen>
+    <dimen name="head_size">28.0dip</dimen>
+    <dimen name="top_category_height">40.0dip</dimen>
+    <dimen name="category_tab_text">15.0sp</dimen>
+
+    <dimen name="side_letter_bar_letter_size">12sp</dimen>
+    <dimen name="side_letter_bar_width">36dp</dimen>
+
+    <dimen name="StatusBarHeight">25dp</dimen>
+</resources>

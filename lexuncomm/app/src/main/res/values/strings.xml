@@ -1,0 +1,39 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">警保联控</string>
+    <string name="launcher_name">@string/app_name</string>
+    <string name="activity_name">@string/launcher_name</string>
+    <string name="title_activity_scan_qr_code">扫一扫</string>
+    <string name="qc_code_close">关闭</string>
+    <string name="qr_code_select_picture">照片</string>
+    <string name="qr_code_open_flash_light">打开闪光灯</string>
+    <string name="qr_code_close_flash_light">关闭闪光灯</string>
+    <string name="qr_code_auto_scan_notification">将二维码放入框内，即可自动扫描</string>
+    <string name="qr_code_notification">提示</string>
+    <string name="qr_code_camera_not_open">您的相机功能好像没有打开哦~去\"设置&gt;隐私&gt;相机\"设置一下吧</string>
+    <string name="qr_code_positive_button_know">知道了</string>
+    <string name="qr_code_positive_button_confirm">确认</string>
+    <string name="qr_code_could_not_read_qr_code_from_picture">没有读出图片中的链接，换张图片试试吧~</string>
+    <string name="qr_code_could_not_read_qr_code_from_scanner">对不起，无法打开扫出的内容</string>
+    <string name="qr_code_camera_not_found">未检测到相机</string>
+    <string name="action_settings">Settings</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="cp_select_city">选择城市</string>
+    <string name="cp_hot_city">热门城市</string>
+    <string name="cp_located_city">定位城市</string>
+    <string name="cp_hint_search_box">请输入搜索内容或拼音</string>
+    <string name="cp_nothing_found">没有搜索结果~</string>
+    <string name="cp_locating">正在定位…</string>
+    <string name="cp_located_failed">定位失败</string>
+    <string name="camera_open_error">相机权限未获取，请开启相机权限</string>
+    <string name="camera_indicator">请将身份证放入框内后拍照！</string>
+    <string name="camera_take_picture_error">拍照失败</string>
+    <string name="reco_dialog_title">提示</string>
+    <string name="reco_dialog_blur">图像无法识别，请将身份证水平放于框内进行拍摄</string>
+    <string name="reco_dialog_imei">该设备未授权！！！</string>
+    <string name="reco_dialog_cdma">请使用CDMA制式设备</string>
+    <string name="reco_dialog_time_out">引擎已过期！！</string>
+    <string name="reco_dialog_engine_init">引擎初始化失败！！</string>
+    <string name="reco_dialog_fail_copy">请勿使用复印件</string>
+    <string name="reco_dialog_licens">授权失败！</string>
+</resources>

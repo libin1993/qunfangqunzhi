@@ -1,0 +1,74 @@
+<?xml version='1.0' encoding='utf-8'?>
+<widget xmlns:cdv="http://cordova.apache.org/ns/1.0"
+    id="io.cordova.lexuncompany"
+    version="1.0.0"
+    xmlns="http://www.w3.org/ns/widgets">
+    <feature name="Whitelist">
+        <param
+            name="android-package"
+            value="org.apache.cordova.whitelist.WhitelistPlugin" />
+        <param
+            name="onload"
+            value="true" />
+    </feature>
+    <feature name="Camera">
+        <param
+            name="android-package"
+            value="org.apache.cordova.camera.CameraLauncher" />
+    </feature>
+    <feature name="BluetoothLePlugin">
+        <param
+            name="android-package"
+            value="com.randdusing.bluetoothle.BluetoothLePlugin" />
+    </feature>
+    <feature name="File">
+        <param
+            name="android-package"
+            value="org.apache.cordova.file.FileUtils" />
+        <param
+            name="onload"
+            value="true" />
+    </feature>
+    <allow-navigation href="cdvfile:*" />
+    <feature name="FileTransfer">
+        <param
+            name="android-package"
+            value="org.apache.cordova.filetransfer.FileTransfer" />
+    </feature>
+    <feature name="BLE">
+        <param
+            name="android-package"
+            value="com.megster.cordova.ble.central.BLECentralPlugin" />
+    </feature>
+    <feature name="NativeForJSUnits">
+        <param
+            name="android-package"
+            value="io.cordova.lexuncompany.units.AndroidForJSUnits" />
+    </feature>
+    <name>HelloCordova</name>
+    <description>
+        A sample Apache Cordova application that responds to the deviceready event.
+    </description>
+    <author
+        email="dev@cordova.apache.org"
+        href="http://cordova.io">
+        Apache Cordova Team
+    </author>
+    <content src="http://116.255.205.110:1002" />
+    <content src="http://192.168.50.236:8101" />
+    <access origin="*" />
+    <allow-intent href="tel:*" />
+    <allow-intent href="sms:*" />
+    <allow-intent href="mailto:*" />
+    <allow-intent href="geo:*" />
+    <allow-intent href="http://*/*" />
+    <allow-intent href="https://*/*" />
+    <allow-navigation href="http://*/*" />
+    <allow-intent href="market:*" />
+    <preference
+        name="loglevel"
+        value="DEBUG" />
+    <preference
+        name="loadUrlTimeoutValue"
+        value="700000" />
+</widget>

@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+            <cn.bingoogolapple.qrcode.zxing.ZXingView
+                android:id="@+id/zxingview"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:qrcv_animTime="1000"
+                app:qrcv_barCodeTipText="将条码放入框内，即可自动扫描"
+                app:qrcv_barcodeRectHeight="120dp"
+                app:qrcv_borderColor="@android:color/white"
+                app:qrcv_borderSize="1dp"
+                app:qrcv_cornerColor="@color/colorAccent"
+                app:qrcv_cornerDisplayType="center"
+                app:qrcv_cornerLength="20dp"
+                app:qrcv_cornerSize="3dp"
+                app:qrcv_isAutoZoom="true"
+                app:qrcv_isBarcode="false"
+                app:qrcv_isOnlyDecodeScanBoxArea="false"
+                app:qrcv_isScanLineReverse="true"
+                app:qrcv_isShowDefaultGridScanLineDrawable="false"
+                app:qrcv_isShowDefaultScanLineDrawable="true"
+                app:qrcv_isShowLocationPoint="true"
+                app:qrcv_isShowTipBackground="true"
+                app:qrcv_isShowTipTextAsSingleLine="false"
+                app:qrcv_isTipTextBelowRect="false"
+                app:qrcv_maskColor="#33FFFFFF"
+                app:qrcv_rectWidth="285dp"
+                app:qrcv_scanLineColor="@color/colorAccent"
+                app:qrcv_scanLineMargin="0dp"
+                app:qrcv_scanLineSize="0.5dp"
+                app:qrcv_tipTextColor="@android:color/white"
+                app:qrcv_tipTextSize="12sp"
+                app:qrcv_topOffset="150dp"
+                app:qrcv_verticalBias="-1" >
+
+            </cn.bingoogolapple.qrcode.zxing.ZXingView>
+
+        <LinearLayout
+            android:id="@+id/qr_code_header_bar"
+            android:layout_width="match_parent"
+            android:layout_height="68dp"
+            android:background="@color/colorPrimary"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:paddingTop="25dp">
+
+            <LinearLayout
+                android:id="@+id/img_btn_back_comm"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:gravity="left"
+                android:paddingLeft="10dp">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@mipmap/ic_back" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/text_title"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="6"
+                android:gravity="center"
+                android:text="扫码"
+                android:textColor="@color/colorWhite"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/text_btn_right"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:gravity="right"
+                android:orientation="horizontal"
+                android:paddingRight="10dp"
+                android:text="相册"
+                android:textColor="@color/colorWhite"
+                android:textSize="18sp">
+
+            </TextView>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/qr_code_ll_flash_light"
+            android:layout_width="match_parent"
+            android:layout_height="120dp"
+            android:layout_alignParentBottom="true"
+            android:background="@color/qr_code_flashlight_bg"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:visibility="visible">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:orientation="vertical">
+
+                <CheckBox
+                    android:id="@+id/checkbox_open_light"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:button="@null"
+                    android:drawablePadding="10dp"
+                    android:drawableTop="@drawable/btn_light_selector"
+                    android:gravity="center"
+                    android:text="开灯"
+                    android:textColor="@color/colorWhite" />
+
+            </LinearLayout>
+        </LinearLayout>
+
+    </RelativeLayout>
+
+</layout>
