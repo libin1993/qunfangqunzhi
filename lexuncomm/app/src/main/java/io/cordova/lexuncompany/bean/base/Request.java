@@ -9,6 +9,7 @@ public class Request {
 
     public static final class Permissions {
         public static final int REQUEST_WRITE_EXTERNAL_STORAGE = 0x0003; //请求读写存储卡权限
+        public static final int REQUEST_CAMERA = 0x0004; //请求相机权限
         public static final int REQUEST_ALL_PERMISSIONS = 0x0005; //请求获取所有权限
     }
 

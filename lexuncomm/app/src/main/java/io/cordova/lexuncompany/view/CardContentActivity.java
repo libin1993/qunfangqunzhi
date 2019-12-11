@@ -2,6 +2,9 @@ package io.cordova.lexuncompany.view;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.ClipData;
 import android.content.ClipboardManager;
@@ -15,31 +18,32 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.annotation.Nullable;
-import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.NotificationCompat;
 import android.text.TextUtils;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.animation.AnimationUtils;
 import android.webkit.GeolocationPermissions;
 import android.webkit.JavascriptInterface;
 import android.webkit.JsResult;
 import android.webkit.WebChromeClient;
-import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
-import com.jph.takephoto.compress.CompressImage;
-import com.jph.takephoto.compress.CompressImageImpl;
-import com.jph.takephoto.model.TImage;
-import com.jph.takephoto.model.TResult;
+
+import com.luck.picture.lib.PictureSelector;
+import com.luck.picture.lib.config.PictureConfig;
+import com.luck.picture.lib.config.PictureMimeType;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Random;
-
 import cn.jpush.android.api.JPushInterface;
 import io.cordova.lexuncompany.R;
 import io.cordova.lexuncompany.bean.base.App;
@@ -55,7 +59,7 @@ import io.cordova.lexuncompany.units.BaseUnits;
 import io.cordova.lexuncompany.units.ConfigUnits;
 import io.cordova.lexuncompany.units.FormatUtils;
 import io.cordova.lexuncompany.units.ImageUtils;
-import io.cordova.lexuncompany.units.PhotoUntils;
+import io.cordova.lexuncompany.units.PermissionUtils;
 import io.cordova.lexuncompany.units.ViewUnits;
 
 import static io.cordova.lexuncompany.bean.base.Request.Permissions.REQUEST_ALL_PERMISSIONS;
@@ -66,8 +70,8 @@ import static io.cordova.lexuncompany.bean.base.Request.Permissions.REQUEST_ALL_
  * Created by JasonYao on 2018/4/3.
  */
 
-public class CardContentActivity extends BaseTakePhotoActivity implements AndroidToJSCallBack {
-    private static final String TAG = "CardContentActivity--";
+public class CardContentActivity extends BaseActivity implements AndroidToJSCallBack {
+    private static final String TAG = "libin";
     private static CardContentActivity mInstance;
     private ActivityCardContentBinding mBinding;
 
@@ -76,12 +80,26 @@ public class CardContentActivity extends BaseTakePhotoActivity implements Androi
     private static boolean isFirstLoaded = true;  //标记是否为第一次加载
     private IntentFilter mFilter = new IntentFilter();
     public static boolean isRunning = false;
-    private String mCode;
+
+    //开启gps
+    private AlertDialog alertDialog;
+
+    private AndroidtoJS androidtoJS;
+
+    private NotificationManager notificationManager = null;
+
+    //巡逻callback
+    private String locationCallback;
+
+
+    public static final String RECEIVER_ACTION = "location_in_background";
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mBinding = DataBindingUtil.setContentView(this, R.layout.activity_card_content);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         AndroidBug5497Workaround.assistActivity(mBinding.getRoot());  //解决在沉浸式菜单栏中，软键盘不能顶起页面的bug
         date();  //每次打开APP都获取剪切板数据,检查是否有推广码
         mInstance = this;
@@ -95,13 +113,117 @@ public class CardContentActivity extends BaseTakePhotoActivity implements Androi
 
         setListener();
 
+
+
+//        buildNotification();
+
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(RECEIVER_ACTION);
+        registerReceiver(locationChangeBroadcastReceiver, intentFilter);
+
+
     }
+
+    private BroadcastReceiver locationChangeBroadcastReceiver = new BroadcastReceiver() {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            if (RECEIVER_ACTION.equals(action)) {
+
+                String location= intent.getStringExtra("location");
+                sendCallback(locationCallback, "200", "success", location);
+
+            }
+        }
+    };
+
+
+    /**
+     * @param callback
+     * @param status
+     * @param msg
+     * @param value
+     */
+    private void sendCallback(String callback, String status, String msg, String value) {
+
+        try {
+            JSONObject jsonObject = new JSONObject();
+            JSONObject data = new JSONObject();
+            data.put("value", value);
+            jsonObject.put("status", status);
+            jsonObject.put("msg", msg);
+            jsonObject.put("data", data);
+            callBackResult(callback, jsonObject.toString());
+        } catch (JSONException e) {
+            Log.e(TAG, e.toString());
+            callBackResult(callback, "未知错误，联系管理员");
+            e.printStackTrace();
+        }
+    }
+
+
+
+
+    /**
+     * 是否开启gps
+     */
+    private void isOpenGps() {
+        if (!ConfigUnits.getInstance().isOpenGps()) {
+            Log.d(TAG, "gps未开启");
+            if (alertDialog != null) {
+                alertDialog.show();
+                return;
+            }
+            alertDialog = new AlertDialog.Builder(this)
+                    .setTitle("提示")
+                    .setMessage("该应用需要开启GPS定位服务，请检查是否开启并选择高精确度模式")
+                    .setIcon(R.mipmap.logo)
+                    .setPositiveButton("去开启", (dialogInterface, i1) -> openGps())
+                    .setNegativeButton("取消", (dialogInterface, i12) -> cancelGps()).create();
+            alertDialog.setCanceledOnTouchOutside(false);
+            alertDialog.setCancelable(false);
+            alertDialog.show();
+        } else {
+            Log.d(TAG, "gps开启");
+            if (alertDialog != null && alertDialog.isShowing()) {
+                alertDialog.dismiss();
+            }
+        }
+    }
+
+    /**
+     * 下拉状态栏开启gps,点击取消按钮作判断
+     */
+    public void cancelGps() {
+        if (ConfigUnits.getInstance().isOpenGps()) {
+            if (alertDialog != null && alertDialog.isShowing()) {
+                alertDialog.dismiss();
+            }
+        } else {
+            finish();
+        }
+    }
+
+    /**
+     * 开启gps
+     */
+    private void openGps() {
+        if (alertDialog != null && alertDialog.isShowing()) {
+            alertDialog.dismiss();
+        }
+        Intent settingsIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+        startActivity(settingsIntent);
+    }
+
 
     @Override
     protected void onResume() {
         super.onResume();
         isRunning = true;
         JPushInterface.setAlias(this, new Random().nextInt(900) + 100, BaseUnits.getInstance().getPhoneKey());
+        isOpenGps();
+
     }
 
     @Override
@@ -114,44 +236,31 @@ public class CardContentActivity extends BaseTakePhotoActivity implements Androi
         return mInstance;
     }
 
-
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         String url = intent.getStringExtra("url");
-        if (!TextUtils.isEmpty(url)){
+        if (!TextUtils.isEmpty(url)) {
             mBinding.webView.loadUrl(url);
         }
     }
 
+
     @JavascriptInterface
     public void initView() {
-
-        DisplayMetrics metric = new DisplayMetrics();
-        getWindowManager().getDefaultDisplay().getMetrics(metric);
-        int width = metric.widthPixels;     // 屏幕宽度（像素）
-        int height = metric.heightPixels;   // 屏幕高度（像素）
-
-        if ((double) height / width > 2) {
-            mBinding.layoutLoading.setImageResource(R.mipmap.bg_splash_large);
-        } else {
-            mBinding.layoutLoading.setImageResource(R.mipmap.bg_splash);
-        }
-
-
         WebSettings webSettings = mBinding.webView.getSettings();
         webSettings.setJavaScriptEnabled(true);  //设置与JS交互权限
         webSettings.setJavaScriptCanOpenWindowsAutomatically(true); //设置运行JS弹窗
         webSettings.setUserAgentString(webSettings.getUserAgentString() + "-Android");  //设置用户代理
         webSettings.setDomStorageEnabled(true);
-        webSettings.setAllowFileAccess(true);
         webSettings.setCacheMode(WebSettings.LOAD_NO_CACHE);
-        webSettings.setSupportZoom(true);
-        webSettings.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.NORMAL);
-
         //启用地理定位
         webSettings.setGeolocationEnabled(true);
+        webSettings.setSupportZoom(true);
+        webSettings.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.NORMAL);
         webSettings.setUseWideViewPort(true);
+        webSettings.setMediaPlaybackRequiresUserGesture(true);
+        webSettings.setAllowFileAccessFromFileURLs(true);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             webSettings.setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
         }
@@ -164,6 +273,7 @@ public class CardContentActivity extends BaseTakePhotoActivity implements Androi
                         isFirstLoaded = false;
                         mBinding.layoutLoading.startAnimation(AnimationUtils.loadAnimation(CardContentActivity.this, R.anim.layout_card_loading_close));
                         mBinding.layoutLoading.setVisibility(View.GONE);
+
                     }
                 }
             }
@@ -181,15 +291,16 @@ public class CardContentActivity extends BaseTakePhotoActivity implements Androi
         });
 
         mBinding.webView.setWebViewClient(new WebViewClient() {
-            @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+
             @Override
-            public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
-                if (request.getUrl() == null) return false;
-                if (request.getUrl().toString().startsWith("http:") || request.getUrl().toString().startsWith("https:")) {
-                    view.loadUrl(String.valueOf(request.getUrl()));
+            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+
+                if (url == null) return false;
+                if (url.startsWith("http:") || url.startsWith("https:")) {
+                    view.loadUrl(url);
                 } else {
                     try {
-                        Intent intent = new Intent(Intent.ACTION_VIEW, request.getUrl());   //UrlScheam为自定义的，打开APP
+                        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
                         startActivity(intent);
                     } catch (Exception e) {
                         return true;
@@ -199,9 +310,10 @@ public class CardContentActivity extends BaseTakePhotoActivity implements Androi
             }
         });
 
-        mBinding.webView.addJavascriptInterface(AndroidtoJS.getInstance(this), "NativeForJSUnits");
+        androidtoJS = new AndroidtoJS(this);
+        mBinding.webView.addJavascriptInterface(androidtoJS, "NativeForJSUnits");
         mBinding.webView.loadUrl(App.LexunCard.CardUrl);
-//        mBinding.webView.loadUrl("http://192.168.50.251/");
+
     }
 
     private void setListener() {
@@ -231,12 +343,10 @@ public class CardContentActivity extends BaseTakePhotoActivity implements Androi
         ActivityCompat.requestPermissions(this, App.mPermissionList, REQUEST_ALL_PERMISSIONS);
     }
 
-    @Override
-    public void finish() {
-        super.finish();
-    }
-
-    public void finish(View view) {
+    /**
+     * @param view 退出app
+     */
+    public void closeApp(View view) {
         if (mBinding.webView.canGoBack()) {
             mBinding.webView.goBack();
         } else {
@@ -244,32 +354,72 @@ public class CardContentActivity extends BaseTakePhotoActivity implements Androi
         }
     }
 
+
     /**
      * 拍照或选择照片
      */
     public void takePhoto(GetImageListener listener) {
         mListener = listener;
-        showTakePicDialog(new TakePicOnClick() {
-            @Override
-            public void choosePhotoOnClick() {
-                getTakePhoto().onPickFromGalleryWithCrop(PhotoUntils.getInstance().createImageFileUri(), PhotoUntils.getInstance().getCropOptions());
-            }
-
-            @Override
-            public void takePictureOnClick() {
-                getTakePhoto().onPickFromCaptureWithCrop(PhotoUntils.getInstance().createImageFileUri(), PhotoUntils.getInstance().getCropOptions());
-            }
-        });
+        if (PermissionUtils.getInstance().hasPermission(this, App.pictureSelect)) {
+            PictureSelector.create(this)
+                    .openGallery(PictureMimeType.ofImage())
+                    .selectionMode(PictureConfig.SINGLE)
+                    .isCamera(true)
+                    .enableCrop(true)// 是否裁剪 true or false
+                    .compress(true)// 是否压缩 true or false
+                    .previewImage(false)
+                    .withAspectRatio(1, 1)// int 裁剪比例 如16:9 3:2 3:4 1:1 可自定义
+                    .freeStyleCropEnabled(true)// 裁剪框是否可拖拽 true or false
+                    .circleDimmedLayer(false)// 是否圆形裁剪 true or false
+                    .showCropGrid(false)
+                    .minimumCompressSize(100)// 小于100kb的图片不压缩
+                    .scaleEnabled(true)// 裁剪是否可放大缩小图片 true or false
+                    .isDragFrame(true)// 是否可拖动裁剪框(固定)
+                    .forResult(PictureConfig.CHOOSE_REQUEST);//结果回调onActivityResult code
+        } else {
+            ActivityCompat.requestPermissions(this, App.pictureSelect, Request.Permissions.REQUEST_CAMERA);
+        }
     }
 
     public void openGallery(GetImageListener listener) {
         mListener = listener;
-        getTakePhoto().onPickFromGalleryWithCrop(PhotoUntils.getInstance().createImageFileUri(), PhotoUntils.getInstance().getCropOptions());
+        PictureSelector.create(this)
+                .openGallery(PictureMimeType.ofImage())
+                .selectionMode(PictureConfig.SINGLE)
+                .previewImage(false)
+                .isCamera(false)
+                .enableCrop(true)// 是否裁剪 true or false
+                .compress(true)// 是否压缩 true or false
+                .withAspectRatio(1, 1)// int 裁剪比例 如16:9 3:2 3:4 1:1 可自定义
+                .freeStyleCropEnabled(true)// 裁剪框是否可拖拽 true or false
+                .circleDimmedLayer(false)// 是否圆形裁剪 true or false
+                .showCropGrid(false)
+                .minimumCompressSize(100)// 小于100kb的图片不压缩
+                .scaleEnabled(true)// 裁剪是否可放大缩小图片 true or false
+                .isDragFrame(true)// 是否可拖动裁剪框(固定)
+                .forResult(PictureConfig.CHOOSE_REQUEST);//结果回调onActivityResult code
     }
 
     public void openTheCamera(GetImageListener listener) {
         mListener = listener;
-        getTakePhoto().onPickFromCaptureWithCrop(PhotoUntils.getInstance().createImageFileUri(), PhotoUntils.getInstance().getCropOptions());
+        if (PermissionUtils.getInstance().hasPermission(this, App.pictureSelect)) {
+            PictureSelector.create(this)
+                    .openCamera(PictureMimeType.ofImage())
+                    .selectionMode(PictureConfig.SINGLE)
+                    .previewImage(false)
+                    .enableCrop(true)// 是否裁剪 true or false
+                    .compress(true)// 是否压缩 true or false
+                    .withAspectRatio(1, 1)// int 裁剪比例 如16:9 3:2 3:4 1:1 可自定义
+                    .freeStyleCropEnabled(true)// 裁剪框是否可拖拽 true or false
+                    .circleDimmedLayer(false)// 是否圆形裁剪 true or false
+                    .showCropGrid(false)
+                    .minimumCompressSize(100)// 小于100kb的图片不压缩
+                    .scaleEnabled(true)// 裁剪是否可放大缩小图片 true or false
+                    .isDragFrame(true)// 是否可拖动裁剪框(固定)
+                    .forResult(PictureConfig.CHOOSE_REQUEST);//结果回调onActivityResult code
+        } else {
+            ActivityCompat.requestPermissions(this, App.pictureSelect, Request.Permissions.REQUEST_CAMERA);
+        }
     }
 
     @Override
@@ -277,6 +427,8 @@ public class CardContentActivity extends BaseTakePhotoActivity implements Androi
         if (FormatUtils.getIntances().isEmpty(callBack)) {
             return;
         }
+
+        Log.d(TAG, callBack + ":" + value);
 
         runOnUiThread(() -> {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
@@ -294,13 +446,7 @@ public class CardContentActivity extends BaseTakePhotoActivity implements Androi
 
 
     @Override
-    protected void onStop() {
-        super.onStop();
-    }
-
-    @Override
     protected void onDestroy() {
-        super.onDestroy();
         mInstance = null;
         mListener = null;
         mFilter = null;
@@ -308,6 +454,12 @@ public class CardContentActivity extends BaseTakePhotoActivity implements Androi
         unregisterReceiver(mBroadcastReceiver);
         destroyWebView();
         mBinding = null;
+
+        if (locationChangeBroadcastReceiver != null)
+            unregisterReceiver(locationChangeBroadcastReceiver);
+
+        super.onDestroy();
+
     }
 
     public void destroyWebView() {
@@ -330,42 +482,30 @@ public class CardContentActivity extends BaseTakePhotoActivity implements Androi
     };
 
 
-    @Override
-    public void takeSuccess(TResult result) {
-        super.takeSuccess(result);
-        ViewUnits.getInstance().showLoading(this, "压缩中");
-        CompressImageImpl.of(this, PhotoUntils.getInstance().getCompressConfig(), result.getImages(), new CompressImage.CompressListener() {
-            @Override
-            public void onCompressSuccess(ArrayList<TImage> images) {
-                ViewUnits.getInstance().missLoading();
-                //图片压缩成功
-                mListener.getImage(Base64.encode(ImageUtils.getInstance().image2byte(images.get(0).getCompressPath())));
-                missTakePicDialog();
-            }
-
-            @Override
-            public void onCompressFailed(ArrayList<TImage> images, String msg) {
-                //图片压缩失败
-            }
-        }).compress();
-    }
-
-    @Override
-    public void takeFail(TResult result, String msg) {
-        super.takeFail(result, msg);
-        ViewUnits.getInstance().showToast(msg);
-        missTakePicDialog();
-    }
-
-    @Override
-    public void takeCancel() {
-        super.takeCancel();
-    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-//        UMShareAPI.get(this).onActivityResult(requestCode, resultCode, data);
+
+        if (resultCode == RESULT_OK && requestCode == PictureConfig.CHOOSE_REQUEST) {
+            //图片压缩成功
+            String img = PictureSelector.obtainMultipleResult(data).get(0).getCompressPath();
+            if (!TextUtils.isEmpty(img) && mListener != null) {
+                mListener.getImage(Base64.encode(ImageUtils.getInstance().image2byte(img)));
+            }
+
+        }
+    }
+
+
+    /**
+     * 横竖屏切换
+     *
+     * @param requestedOrientation
+     */
+    @Override
+    public void setRequestedOrientation(int requestedOrientation) {
+
     }
 
     @Override
@@ -377,7 +517,7 @@ public class CardContentActivity extends BaseTakePhotoActivity implements Androi
                     if (!ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_PHONE_STATE)) {
                         AlertDialog alertDialog = new AlertDialog.Builder(this)
                                 .setTitle("提示")
-                                .setMessage("未获得相应权限，无法正常使用APP，请前往安全中心>权限管理>警保联控，开启相关权限")
+                                .setMessage("未获得相应权限，无法正常使用APP，请前往安全中心>权限管理>乐巡，开启相关权限")
                                 .setIcon(R.mipmap.logo)
                                 .setPositiveButton("确定", (dialogInterface, i1) -> {
                                     Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
@@ -406,7 +546,7 @@ public class CardContentActivity extends BaseTakePhotoActivity implements Androi
                     if (!ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
                         AlertDialog alertDialog = new AlertDialog.Builder(this)
                                 .setTitle("提示")
-                                .setMessage("未获得定位权限，无法正常使用APP，请前往安全中心>权限管理>警保联控，开启相关权限")
+                                .setMessage("未获得定位权限，无法正常使用APP，请前往安全中心>权限管理>智慧家园，开启相关权限")
                                 .setIcon(R.mipmap.logo)
                                 .setPositiveButton("确定", (dialogInterface, i1) -> {
                                     Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
@@ -445,7 +585,7 @@ public class CardContentActivity extends BaseTakePhotoActivity implements Androi
             String content = item.getText().toString();
             Log.e(TAG, content);
             if (content.split("=").length == 2 && content.split("=")[0].equals("lexunReferralCode")) {
-                mCode = content.split("=")[1];
+                String mCode = content.split("=")[1];
                 ConfigUnits.getInstance().setLexunReferralCode(mCode);
                 Log.e(TAG, "推广码为1：" + mCode);
                 Log.e(TAG, "推广码为2：" + ConfigUnits.getInstance().getLexunReferralCode());

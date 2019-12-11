@@ -28,14 +28,14 @@ allprojects {
 android {
     signingConfigs {
         debug {
-            storeFile file('E:\\qunfangqunzhi\\lexuncomm\\keystoreLexunCompany.jks')
+            storeFile file('../keystoreLexunCompany.jks')
             storePassword 'tdr123456'
             keyAlias = 'key0'
             keyPassword 'tdr123456'
         }
 
         release {
-            storeFile file('E:\\qunfangqunzhi\\lexuncomm\\keystoreLexunCompany.jks')
+            storeFile file('../keystoreLexunCompany.jks')
             storePassword 'tdr123456'
             keyAlias = 'key0'
             keyPassword 'tdr123456'
@@ -48,7 +48,7 @@ android {
         versionName "1.0.0"
         applicationId "io.cordova.lexuncompany"
         targetSdkVersion 28
-        minSdkVersion 18
+        minSdkVersion 19
         multiDexEnabled true
 
         ndk {
@@ -94,11 +94,8 @@ dependencies {
     implementation 'com.android.support:appcompat-v7:28.0.0'
     implementation 'com.android.support:cardview-v7:28.0.0'
     implementation 'com.android.support:recyclerview-v7:28.0.0'
-    //等待框
-//    implementation 'com.github.gittjy:LoadingDialog:1.0.2'
+
     implementation 'com.google.code.gson:gson:2.2.4'
-    //图片选择器3
-    implementation 'com.jaikydota.imagespickers:imagespickers:1.0.6'
     //如果使用图片加载框架，添加依赖，下面用Glide示例
     implementation 'com.github.bumptech.glide:glide:4.7.1'
     //集成bugly
@@ -111,13 +108,11 @@ dependencies {
     implementation 'com.umeng.sdk:analytics:7.5.0'
     implementation 'com.wang.avi:library:2.1.3'
     implementation files('libs/BaiduLBS_Android.jar')
-    //拍照和从相册中选择
-    implementation 'com.jph.takephoto:takephoto_library:4.0.3'
+
     //zxing
     implementation 'cn.bingoogolapple:bga-qrcode-zxing:1.3.6'
     implementation 'cn.bingoogolapple:bga-photopicker:1.2.8@aar'
     implementation 'cn.bingoogolapple:bga-baseadapter:1.2.9@aar'
-    implementation 'cn.bingoogolapple:bga-flowlayout:1.0.0@aar'
 
     implementation 'com.android.support:multidex:1.0.1'
 
@@ -125,6 +120,11 @@ dependencies {
     implementation 'com.jakewharton:butterknife:8.4.0'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.4.0'
 
-    //扫码
-    implementation project(':zbar')
+
+    implementation 'com.amap.api:location:latest.integration'
+
+    //图片选择
+    implementation 'com.github.LuckSiege.PictureSelector:picture_library:v2.2.4'
+    implementation project(path: ':zbar')
+
 }

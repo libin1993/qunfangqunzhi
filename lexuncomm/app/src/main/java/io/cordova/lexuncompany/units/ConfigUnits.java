@@ -1,8 +1,11 @@
 package io.cordova.lexuncompany.units;
 
+import android.content.Context;
 import android.database.Cursor;
+import android.location.LocationManager;
 
 import io.cordova.lexuncompany.bean.base.Field;
+import io.cordova.lexuncompany.view.CardContentActivity;
 
 /**
  * 配置工具类
@@ -101,5 +104,14 @@ public class ConfigUnits {
      */
     public void setLexunReferralCode(String lexunReferralCode) {
         SPUtils.getInstance().put(SPUtils.FILE_CONFIG, SPUtils.lexunReferralCode, lexunReferralCode);
+    }
+
+
+    /**
+     * @return 是否开启gps
+     */
+    public boolean isOpenGps() {
+        LocationManager locationManager = (LocationManager) CardContentActivity.getInstance().getSystemService(Context.LOCATION_SERVICE);
+        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
     }
 }

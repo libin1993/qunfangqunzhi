@@ -28,6 +28,13 @@ public class App {
             Manifest.permission.CAMERA
     };
 
+
+    public static final String[] pictureSelect = new String[]{
+            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            Manifest.permission.CAMERA
+    };
+
+
     /**
      * 缓存数据库
      */

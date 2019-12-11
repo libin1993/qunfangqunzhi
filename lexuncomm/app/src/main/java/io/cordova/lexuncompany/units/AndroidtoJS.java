@@ -30,7 +30,6 @@ import io.cordova.lexuncompany.view.ScanQRCodeActivity;
  */
 public class AndroidtoJS implements QrCodeScanInter, CityPickerResultListener {
     private static final String TAG = "AndroidtoJS--";
-    private static AndroidtoJS mInstance = null;
 
     //巡逻相关
     private LocationClient mBaiduLocationClient;
@@ -42,12 +41,7 @@ public class AndroidtoJS implements QrCodeScanInter, CityPickerResultListener {
     private Gson mGson = new Gson();
 
 
-    public static AndroidtoJS getInstance(AndroidToJSCallBack callBack) {
-        mInstance = new AndroidtoJS(callBack);
-        return mInstance;
-    }
-
-    private AndroidtoJS(AndroidToJSCallBack callBack) {
+    public AndroidtoJS(AndroidToJSCallBack callBack) {
         this.mCallBack = callBack;
     }
 
@@ -340,6 +334,11 @@ public class AndroidtoJS implements QrCodeScanInter, CityPickerResultListener {
                     if (bdLocation != null && bdLocation.getLatitude() >1 && bdLocation.getLongitude() > 1) {
                         sendCallBack(callBack, "200", "success", bdLocation.getLatitude() + "," + bdLocation.getLongitude());
                     }
+                }
+
+                @Override
+                public void onLocDiagnosticMessage(int i, int i1, String s) {
+                    sendCallBack(callBack, "500", "success", s);
                 }
             });
         } else if (!mBaiduLocationClient.isStarted()) {
