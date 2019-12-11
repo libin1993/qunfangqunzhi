@@ -136,7 +136,8 @@ public class QRUtils {
         int[] data = new int[scanBitmap.getWidth() * scanBitmap.getHeight()];
         scanBitmap.getPixels(data, 0, scanBitmap.getWidth(), 0, 0, scanBitmap.getWidth(), scanBitmap.getHeight());
         RGBLuminanceSource rgbLuminanceSource = new RGBLuminanceSource(scanBitmap.getWidth(),scanBitmap.getHeight(),data);
-        BinaryBitmap binaryBitmap = new BinaryBitmap(new GlobalHistogramBinarizer(rgbLuminanceSource));
+        //rgbLuminanceSource.invert() 白色黑底二维码识别
+        BinaryBitmap binaryBitmap = new BinaryBitmap(new GlobalHistogramBinarizer(rgbLuminanceSource.invert()));
         QRCodeReader reader = new QRCodeReader();
         Result result = null;
         try {
