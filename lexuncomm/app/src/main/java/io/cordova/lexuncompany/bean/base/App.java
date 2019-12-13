@@ -51,7 +51,9 @@ public class App {
     public static class LexunCard {
 //        public static final String CardUrl = "http://122.114.207.164:18081/"; //正式环境下CardUrl
 
-        public static final String CardUrl = "http://ys-zcsapp.iotone.cn:22800"; //正式环境下CardUrl
+
+        public static final String CardUrl ="http://ys-groupdefense.iotone.cn:22800";
+//        public static final String CardUrl = "http://ys-zcsapp.iotone.cn:22800"; //正式环境下CardUrl
 
 
         public static final String BUGLY_APPID = "e9950e84c6";  //bugly群防群治
