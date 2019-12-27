@@ -33,11 +33,16 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.ImageView;
 
 
 import com.luck.picture.lib.PictureSelector;
 import com.luck.picture.lib.config.PictureConfig;
 import com.luck.picture.lib.config.PictureMimeType;
+import com.tencent.bugly.Bugly;
+import com.tencent.bugly.beta.Beta;
+import com.tencent.bugly.beta.UpgradeInfo;
+import com.tencent.bugly.beta.ui.UILifecycleListener;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -121,7 +126,73 @@ public class CardContentActivity extends BaseActivity implements AndroidToJSCall
         intentFilter.addAction(RECEIVER_ACTION);
         registerReceiver(locationChangeBroadcastReceiver, intentFilter);
 
+        checkUpdate();
+    }
 
+
+    /**
+     * ji
+     */
+    private void checkUpdate() {
+        Beta.upgradeDialogLayoutId = R.layout.layout_update_popup;
+        Beta.strNetworkTipsCancelBtn = "";
+        Beta.strUpgradeDialogCancelBtn = "     ";
+        Beta.initDelay = 2 * 1000;
+        Beta.canShowUpgradeActs.add(CardContentActivity.class);
+
+        Beta.upgradeDialogLifecycleListener = new UILifecycleListener<UpgradeInfo>() {
+            @Override
+            public void onCreate(Context context, View view, UpgradeInfo upgradeInfo) {
+                Log.d("libin", "onResume111"+upgradeInfo.upgradeType);
+                // 注：可通过这个回调方式获取布局的控件，如果设置了id，可通过findViewById方式获取，如果设置了tag，可以通过findViewWithTag，具体参考下面例子:
+
+                // 通过id方式获取控件
+
+                ImageView ivCancel = (ImageView) view.findViewById(R.id.iv_cancel_update);
+
+                // 更多的操作：比如设置控件的点击事件
+                ivCancel.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (upgradeInfo.upgradeType == 2){
+                            finish();
+                            System.exit(0);
+                            android.os.Process.killProcess(android.os.Process.myPid());
+                        }
+                    }
+                });
+            }
+
+            @Override
+            public void onStart(Context context, View view, UpgradeInfo upgradeInfo) {
+
+            }
+
+            @Override
+            public void onResume(Context context, View view, UpgradeInfo upgradeInfo) {
+
+
+
+            }
+
+            @Override
+            public void onPause(Context context, View view, UpgradeInfo upgradeInfo) {
+
+            }
+
+            @Override
+            public void onStop(Context context, View view, UpgradeInfo upgradeInfo) {
+
+            }
+
+            @Override
+            public void onDestroy(Context context, View view, UpgradeInfo upgradeInfo) {
+
+            }
+
+        };
+
+        Bugly.init(getApplicationContext(), App.LexunCard.BUGLY_APPID, false);
     }
 
     private BroadcastReceiver locationChangeBroadcastReceiver = new BroadcastReceiver() {

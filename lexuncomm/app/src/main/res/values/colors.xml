@@ -78,4 +78,5 @@
     <color name="font_green">#00cccc</color>
 
     <color name="commom_background">#f3f3f3</color>
+    <color name="gray_550">#55000000</color>
 </resources>

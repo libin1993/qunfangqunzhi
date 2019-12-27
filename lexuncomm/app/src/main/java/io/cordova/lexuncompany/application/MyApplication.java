@@ -40,10 +40,6 @@ public class MyApplication extends Application {
 
         Stetho.initializeWithDefaults(this);  //初始化Chrome查看Sqlite插件
 
-
-        Beta.canShowUpgradeActs.add(CardContentActivity.class);
-        Bugly.init(getApplicationContext(), App.LexunCard.BUGLY_APPID, false);  //乐巡企业版bugly
-
         //极光推送
         JPushInterface.setDebugMode(true);
         JPushInterface.init(this);
